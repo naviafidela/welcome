@@ -29,7 +29,8 @@ async def add_group(client, message):
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         # Mengirim gambar dengan spoiler dan pesan
-        message = await message.reply_photo(
+        sent_message = await client.send_photo(
+            chat_id=message.chat.id,  # Mengirim ke grup yang sama
             photo="https://i.ibb.co/L8YvcTB/6276011250815189839-120.jpg",  # Ganti dengan URL gambar yang sesuai
             caption=f"👋 Hai {member.full_name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
@@ -48,7 +49,7 @@ async def add_group(client, message):
 
         # Menunggu selama 15 detik dan menghapus pesan
         await asyncio.sleep(15)
-        await message.delete()
+        await sent_message.delete()
 
 # Menjalankan bot dan mencetak 'Berhasil' jika berjalan lancar
 if __name__ == "__main__":

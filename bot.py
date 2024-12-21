@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
-API_TOKEN = 'YOUR_API_TOKEN'
+API_TOKEN = '7508753099:AAEDEAogPWH2Z13TmfJn0efWKImPLTI-7h8'
 
 async def welcome_message(update: Update, context: CallbackContext):
     for member in update.message.new_chat_members:

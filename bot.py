@@ -9,6 +9,12 @@ bot_token = '7559677848:AAEZUWxYlCEXZgcllUDKFztK7TmS2tGs_0o'  # Ganti dengan tok
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
+# Handler untuk /start
+@app.on_message(filters.command("start"))
+async def start(client, message):
+    await message.reply_text("Website Saat Ini : https://bokep2025.us")
+
+# Handler untuk anggota baru
 @app.on_message(filters.new_chat_members)
 async def add_group(client, message):
     for member in message.new_chat_members:
@@ -21,12 +27,12 @@ async def add_group(client, message):
         # Mengirim gambar dengan spoiler dan pesan
         message = await message.reply_photo(
             photo="https://i.ibb.co.com/L8YvcTB/6276011250815189839-120.jpg",  # Ganti dengan URL gambar yang sesuai
-            caption=f"👋Hai {member.full_name}\n\n"
+            caption=f"👋 Hai {member.full_name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
                     "Total Media Grup :\n"
-                    "📷Foto = 75683\n"
-                    "📹Video = 27603\n\n"
+                    "📷 Foto = 75683\n"
+                    "📹 Video = 27603\n\n"
                     "Cara Buka Kunci Media:\n"
                     "Klik Tombol Buka Kunci Dan Bagikan Ke 3 - 5 Grup Untuk Membuka.\n\n"
                     "Note:\n"

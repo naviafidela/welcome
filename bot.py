@@ -21,7 +21,7 @@ async def add_group(update: Update, context: CallbackContext):
 
         # Mengirim gambar dengan pesan dan tombol
         await update.message.reply_photo(
-            photo="https://i.ibb.co/com/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
+            photo="https://i.ibb.co.com/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
             caption=f"Hai {member.full_name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"

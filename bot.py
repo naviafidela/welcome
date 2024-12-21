@@ -22,7 +22,7 @@ async def add_group(update: Update, context: CallbackContext):
         # Mengirim gambar dengan spoiler dan pesan
         message = await update.message.reply_photo(
             photo="https://i.ibb.co/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
-            caption=f"👋Hai {member.full_name}\n\n"
+            caption=f"Hai {member.full_name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
                     "Total Media Grup :\n"
@@ -30,13 +30,13 @@ async def add_group(update: Update, context: CallbackContext):
                     "📹Video = 27603\n\n"
                     "Cara Buka Kunci Media:\n"
                     "Klik Tombol Buka Kunci Dan Bagikan Ke 3 - 5 Grup Untuk Membuka.\n\n"
-                    "Note:\nJika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini. \nJika Anda Keluar Grup Maka Anda Tidak Bisa Bergabung Kembali.",
+                    "Note: Jika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini. Jika Anda Keluar Grup Maka Anda Tidak Bisa Bergabung Kembali.",
             reply_markup=reply_markup,
             has_spoiler=True  # Menyembunyikan gambar dengan spoiler
         )
 
         # Menjadwalkan penghapusan pesan setelah 15 detik
-        await context.job_queue.run_once(delete_message, 15, context={'chat_id': message.chat.id, 'message_id': message.message_id})
+        context.job_queue.run_once(delete_message, 15, context={'chat_id': message.chat.id, 'message_id': message.message_id})
 
 async def delete_message(context: CallbackContext):
     # Menghapus pesan setelah 15 detik

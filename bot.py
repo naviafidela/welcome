@@ -9,7 +9,7 @@ async def start(update: Update, context: CallbackContext):
     await update.message.reply_text('''Website Saat Ini : https://bokep2025.us ''')
 
 async def help(update: Update, context: CallbackContext):
-    await update.message.reply_text("➠ 𝙰𝚍𝚍 𝙼𝚎 𝚃𝚘 𝙶𝚛𝚘𝚞𝚙\n\n➠ 𝙼𝚊𝚔𝚎 𝙰𝚍𝚖𝚒𝚗 𝙼𝚎\n\n👲 𝙼𝚊𝚒𝚗𝚝𝚊𝚒𝚗𝚎𝚍 𝙱𝚢 : @BX_Botz")
+    await update.message.reply_text("➠ 𝙰𝚍𝚍 𝙼𝚎 𝚃𝚘 𝙶𝚛𝚘𝚞𝚙\n\n➠ 𝙼𝚊𝚔𝚎 𝙰𝚍𝚖𝚒𝚗 𝙼𝚎\n\n👲")
 
 async def add_group(update: Update, context: CallbackContext):
     for member in update.message.new_chat_members:
@@ -21,7 +21,7 @@ async def add_group(update: Update, context: CallbackContext):
 
         # Mengirim gambar dengan spoiler dan pesan
         message = await update.message.reply_photo(
-            photo="https://i.ibb.co.com/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
+            photo="https://i.ibb.co/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
             caption=f"Hai {member.full_name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
@@ -36,11 +36,13 @@ async def add_group(update: Update, context: CallbackContext):
         )
 
         # Menjadwalkan penghapusan pesan setelah 15 detik
-        await context.job_queue.run_once(delete_message, 15, context=message.chat.id)
+        await context.job_queue.run_once(delete_message, 15, context={'chat_id': message.chat.id, 'message_id': message.message_id})
 
 async def delete_message(context: CallbackContext):
     # Menghapus pesan setelah 15 detik
-    await context.bot.delete_message(chat_id=context.job.context, message_id=context.job.context.message_id)
+    chat_id = context.job.context['chat_id']
+    message_id = context.job.context['message_id']
+    await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 # Inisialisasi Application dan bot
 application = Application.builder().token(TOKEN).build()

@@ -21,8 +21,9 @@ async def add_group(client, message):
     for member in message.new_chat_members:
         # Membuat tombol dengan link untuk berbagi pesan
         share_message = (
-            "Asupan SMA 💦 : https://t.me/joinchat/7P2DFzD_s5I1MTM1\n\n"
-            "Pemersatu Bangsa 💦 : https://t.me/joinchat/vG-iFZLTulg2Zjhl"
+            "Asupan SMA 💦 : https://t.me/joinchat/XhW2zQyEZrY4MTI1\n\n"
+            "Pemersatu Bangsa 💦 : https://t.me/joinchat/Tmn5kri50TRiYjhl\n\n"
+            "Website : https://bokep2025.asia"
         )
 
         # Encode message untuk URL

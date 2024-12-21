@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, filters
 
 # Ganti dengan token yang sesuai jika Anda tidak menggunakan variabel lingkungan
-TOKEN = "7508753099:AAEDEAogPWH2Z13TmfJn0efWKImPLTI-7h8"
+TOKEN = "7559677848:AAEZUWxYlCEXZgcllUDKFztK7TmS2tGs_0o"
 
 async def start(update: Update, context: CallbackContext):
     await update.message.reply_text('''𝙷𝚊𝚒 , \n\n𝙸𝚊𝚖 𝚊 𝚂𝚒𝚖𝚙𝚕𝚎 𝚆𝚎𝚕𝚌𝚘𝚖𝚎 𝙱𝚘𝚝. 𝙰𝚍𝚍 𝚖𝚎 𝚝𝚘 𝚢𝚘𝚞𝚛 𝚐𝚛𝚘𝚞𝚙 𝚊𝚗𝚍 𝚖𝚊𝚔𝚎 𝚖𝚎 𝚊𝚜 𝚊𝚍𝚖𝚒𝚗\n\n👲 𝙼𝚊𝚒𝚗𝚝𝚊𝚒𝚗𝚎𝚍 𝙱𝚢 : @BX_Botz ''')

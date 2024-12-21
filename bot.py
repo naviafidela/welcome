@@ -19,11 +19,11 @@ async def add_group(update: Update, context: CallbackContext):
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        # Mengirim gambar sebagai spoiler
+        # Mengirim gambar sebagai spoiler dengan format markdown
         message = await context.bot.send_photo(
             chat_id=update.message.chat_id,
             photo="https://i.ibb.co/com/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
-            caption=f"Hai {member.full_name}\n\n"
+            caption=f"||Hai {member.full_name}||\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
                     "Total Media Grup :\n"
@@ -33,7 +33,7 @@ async def add_group(update: Update, context: CallbackContext):
                     "Klik Tombol Buka Kunci Dan Bagikan Ke 3 - 5 Grup Untuk Membuka.\n\n"
                     "Note: Jika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini. Jika Anda Keluar Grup Maka Anda Tidak Bisa Bergabung Kembali.",
             reply_markup=reply_markup,
-            spoiler=True  # Menyembunyikan gambar dengan spoiler
+            parse_mode="Markdown"  # Mengaktifkan parsing markdown
         )
 
         # Menjadwalkan penghapusan pesan setelah 15 detik

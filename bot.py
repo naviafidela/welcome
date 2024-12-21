@@ -1,5 +1,5 @@
 import os
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, filters
 
 # Ganti dengan token yang sesuai jika Anda tidak menggunakan variabel lingkungan
@@ -13,7 +13,26 @@ async def help(update: Update, context: CallbackContext):
 
 async def add_group(update: Update, context: CallbackContext):
     for member in update.message.new_chat_members:
-        await update.message.reply_text(f'Hai {member.full_name} , Welcome to ln Support\n\n💖Thank💖You💖For💖Joining💖')
+        # Membuat tombol dengan link yang diberikan
+        keyboard = [
+            [InlineKeyboardButton("🔐Buka Kunci Media🔐", url="https://t.me/share/url?text=Asupan+SMA+💦+:+https://t.me/joinchat/7P2DFzD_s5I1MTM1+\n\n+Pemersatu+Bangsa+💦+:+https://t.me/joinchat/vG-iFZLTulg2Zjhl")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # Mengirim gambar dengan pesan dan tombol
+        await update.message.reply_photo(
+            photo="https://i.ibb.co/com/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
+            caption=f"Hai {member.full_name}\n\n"
+                    "Semua Chat Disembunyikan Untuk Anggota Baru\n"
+                    "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
+                    "Total Media Grup :\n"
+                    "📷Foto = 75683\n"
+                    "📹Video = 27603\n\n"
+                    "Cara Buka Kunci Media:\n"
+                    "Klik Tombol Buka Kunci Dan Bagikan Ke 3 - 5 Grup Untuk Membuka.\n\n"
+                    "Note: Jika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini.",
+            reply_markup=reply_markup
+        )
 
 # Inisialisasi Application dan bot
 application = Application.builder().token(TOKEN).build()
@@ -27,4 +46,5 @@ application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, ad
 
 # Mulai polling
 if __name__ == '__main__':
+    print("Sukses: Bot telah berhasil diinstal dan siap dijalankan.")
     application.run_polling()

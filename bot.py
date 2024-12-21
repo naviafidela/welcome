@@ -39,7 +39,7 @@ async def add_group(client, message):
                     "Jika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini.\n"
                     "Jika Anda Keluar Grup Maka Anda Tidak Bisa Bergabung Kembali.",
             reply_markup=reply_markup,
-            spoiler=True  # Menyembunyikan gambar dengan spoiler
+            has_spoiler=True  # Menyembunyikan gambar dengan spoiler
         )
 
         # Menunggu selama 15 detik dan menghapus pesan

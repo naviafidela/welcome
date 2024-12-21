@@ -36,11 +36,11 @@ async def add_group(update: Update, context: CallbackContext):
         )
 
         # Menjadwalkan penghapusan pesan setelah 15 detik
-        context.application.job_queue.run_once(delete_message, 15, chat_id=message.chat.id, message_id=message.message_id)
+        context.application.job_queue.run_once(delete_message, 15, context={"chat_id": message.chat.id, "message_id": message.message_id})
 
 async def delete_message(context: CallbackContext):
-    chat_id = context.job.context['chat_id']
-    message_id = context.job.context['message_id']
+    chat_id = context.job.context["chat_id"]
+    message_id = context.job.context["message_id"]
     await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 # Inisialisasi Application dan bot

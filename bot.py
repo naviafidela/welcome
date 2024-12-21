@@ -20,7 +20,7 @@ async def add_group(update: Update, context: CallbackContext):
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         # Mengirim gambar sebagai spoiler
-        message = await update.message.bot.send_photo(
+        message = await context.bot.send_photo(
             chat_id=update.message.chat_id,
             photo="https://i.ibb.co/com/L8YvcTB/6276011250815189839-120.jpg",  # URL gambar
             caption=f"Hai {member.full_name}\n\n"

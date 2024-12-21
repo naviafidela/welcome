@@ -41,14 +41,13 @@ async def add_group(client, message):
                     "Cara Buka Kunci Media:\n"
                     "Klik Tombol Buka Kunci Dan Bagikan Ke 3 - 5 Grup Untuk Membuka.\n\n"
                     "Note:\n"
-                    "Jika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini.\n"
-                    "Jika Anda Keluar Grup Maka Anda Tidak Bisa Bergabung Kembali.",
+                    "Jika Terverifikasi Anda Sudah Bisa Mengirim Pesan Dan Melihat Video Di Grup Ini.\n",
             reply_markup=reply_markup,
-            has_spoiler=True  # Menyembunyikan gambar dengan spoiler
+            has_spoiler=True
         )
 
         # Menunggu selama 15 detik dan menghapus pesan
-        await asyncio.sleep(15)
+        await asyncio.sleep(30)
         await sent_message.delete()
 
 # Menjalankan bot dan mencetak 'Berhasil' jika berjalan lancar

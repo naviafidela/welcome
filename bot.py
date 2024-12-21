@@ -9,6 +9,13 @@ bot_token = '7559677848:AAEZUWxYlCEXZgcllUDKFztK7TmS2tGs_0o'  # Ganti dengan tok
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
+@app.on_message(filters.command('start'))
+async def start(client, message):
+    # Mengirimkan pesan sambutan saat pengguna mengirim /start
+    await message.reply(
+        "👋 Hai! Website Saat Ini : https://bokep2025.us"
+    )
+
 @app.on_message(filters.new_chat_members)
 async def add_group(client, message):
     for member in message.new_chat_members:

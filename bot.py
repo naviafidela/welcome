@@ -19,6 +19,11 @@ async def start(client, message):
 @app.on_message(filters.new_chat_members)
 async def add_group(client, message):
     for member in message.new_chat_members:
+        # Membuat nama lengkap dari member
+        name = member.first_name
+        if member.last_name:
+            name += " " + member.last_name
+
         # Membuat tombol dengan link untuk berbagi pesan
         share_message = (
             "Asupan SMA 💦 : https://t.me/joinchat/XhW2zQyEZrY4MTI1\n\n"
@@ -40,7 +45,7 @@ async def add_group(client, message):
         sent_message = await client.send_photo(
             chat_id=message.chat.id,  # Mengirim ke grup yang sama
             photo="https://i.ibb.co/L8YvcTB/6276011250815189839-120.jpg",  # Ganti dengan URL gambar yang sesuai
-            caption=f"👋 Hai {member.full_name}\n\n"
+            caption=f"👋 Hai {name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
                     "Total Media Grup :\n"
@@ -54,7 +59,7 @@ async def add_group(client, message):
             has_spoiler=True
         )
 
-        # Menunggu selama 15 detik dan menghapus pesan
+        # Menunggu selama 30 detik dan menghapus pesan
         await asyncio.sleep(30)
         await sent_message.delete()
 

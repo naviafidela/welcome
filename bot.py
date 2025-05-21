@@ -23,6 +23,7 @@ async def add_group(client, message):
             "🔥 **Bergabung di Grup Baru :**\n\n"
             "**BokepSenja .com** 💦 : https://t.me/joinchat/j4cRH_jg7VJhN2I1\n\n"
             "**Asupan SMA** 💦 : https://t.me/joinchat/JdpYxovFx3IyMjg1\n\n"
+            "**Channel ** 💦 : @BokepSenjaBot\n\n"
             "**Website** : https://bokepsenja.com"
         )
 

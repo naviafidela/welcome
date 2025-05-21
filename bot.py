@@ -9,12 +9,6 @@ bot_token = '7559677848:AAEZUWxYlCEXZgcllUDKFztK7TmS2tGs_0o'  # Ganti dengan tok
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-@app.on_message(filters.command('start'))
-async def start(client, message):
-    # Mengirimkan pesan sambutan saat pengguna mengirim /start
-    await message.reply(
-        "👋 Hai! Website Saat Ini : https://bokep2025.us"
-    )
 
 @app.on_message(filters.new_chat_members)
 async def add_group(client, message):
@@ -26,9 +20,9 @@ async def add_group(client, message):
 
         # Membuat tombol dengan link untuk berbagi pesan
         share_message = (
-            "Asupan SMA 💦 : https://t.me/joinchat/XhW2zQyEZrY4MTI1\n\n"
-            "Pemersatu Bangsa 💦 : https://t.me/joinchat/Tmn5kri50TRiYjhl\n\n"
-            "Website : https://bokep2025.asia"
+            "BokepSenja.com 💦 : https://t.me/joinchat/j4cRH_jg7VJhN2I1\n\n"
+            "Asupan SMA 💦 : https://t.me/joinchat/JdpYxovFx3IyMjg1\n\n"
+            "Website : https://bokepsenja.com"
         )
 
         # Encode message untuk URL

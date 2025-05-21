@@ -1,4 +1,4 @@
-from pyrogram import Client, filters
+ng from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
 
@@ -20,10 +20,10 @@ async def add_group(client, message):
 
         # Membuat tombol dengan link untuk berbagi pesan
         share_message = (
-            "🔥 Gabung Dan Ramaikan :\n\n"
-            "BokepSenja .com 💦 : https://t.me/joinchat/j4cRH_jg7VJhN2I1\n\n"
-            "Asupan SMA 💦 : https://t.me/joinchat/JdpYxovFx3IyMjg1\n\n"
-            "Website : https://bokepsenja.com"
+            "🔥 **Bergabung di Grup Baru :**\n\n"
+            "**BokepSenja .com** 💦 : https://t.me/joinchat/j4cRH_jg7VJhN2I1\n\n"
+            "**Asupan SMA** 💦 : https://t.me/joinchat/JdpYxovFx3IyMjg1\n\n"
+            "**Website** : https://bokepsenja.com"
         )
 
         # Encode message untuk URL

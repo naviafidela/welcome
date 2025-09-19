@@ -5,7 +5,7 @@ import asyncio
 # Ganti dengan token bot Telegram Anda
 api_id = '20786693'  # Ganti dengan API ID Anda
 api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'  # Ganti dengan API Hash Anda
-bot_token = '7508753099:AAEAOAVefdjLDSKCQSTPJM2p1bmUMhV5V9Y'  # Ganti dengan token bot Anda
+bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'  # Ganti dengan token bot Anda
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 

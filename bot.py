@@ -61,14 +61,18 @@ async def send_photo_and_video(chat_id, item, client):
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
     
-    # kirim Text
-    await message.reply("⏳ Mencari video ...") 
-    
+    # kirim pesan loading dulu
+    searching_msg = await message.reply("⏳ Mencari video ...")
+
     item = await get_random_item()
     if not item:
-        await message.reply("⚠️ Data tidak ditemukan dari API.")
+        await searching_msg.edit("⚠️ Data tidak ditemukan dari API.")
         return
 
+    # hapus pesan "Mencari video ..."
+    await searching_msg.delete()
+
+    # kirim video
     await send_photo_and_video(message.chat.id, item, client)
 
 # === Callback Handler ===

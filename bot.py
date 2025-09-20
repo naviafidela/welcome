@@ -1,12 +1,13 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import asyncio
 import random
-from message_api import data   # 🔹 import data dari file message-api.py
+from message_api import data   # 🔹 data dari message-api.py
 
 import aiohttp
 from io import BytesIO
 from PIL import Image
+
 
 # Ganti dengan token bot Telegram Anda
 api_id = '20786693'
@@ -25,7 +26,7 @@ async def fetch_and_resize(url, width=1280, height=720):
     img = Image.open(BytesIO(img_bytes))
     img = img.convert("RGB")
 
-    # Resize dengan crop tengah biar tidak gepeng
+    # Crop cover tengah biar tidak gepeng
     img_ratio = img.width / img.height
     target_ratio = width / height
 
@@ -49,17 +50,27 @@ async def fetch_and_resize(url, width=1280, height=720):
     return output
 
 
-# 🔹 Command /start (kirim random 1 item dengan foto 16:9)
+# 🔹 Generate keyboard
+def build_keyboard(item):
+    keyboard = [
+        [InlineKeyboardButton("🔥BUKA LINK VIDEO🔥", url=item["url"])],
+        [
+            InlineKeyboardButton("🗪GRUP 1", url="https://t.me/joinchat/j4cRH_jg7VJhN2I1"),
+            InlineKeyboardButton("🗪GRUP 2", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
+        ],
+        [InlineKeyboardButton("📢Join Channel", url="https://t.me/BokepSenjaBot")],
+        [InlineKeyboardButton("🔄Cari Video Lainnya", callback_data="next")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
+# 🔹 Command /start
 @app.on_message(filters.command("start"))
 async def start(client, message):
     item = random.choice(data)
-
     resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
 
-    keyboard = [
-        [InlineKeyboardButton("🔗 Buka Link", url=item["url"])]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = build_keyboard(item)
 
     await client.send_photo(
         chat_id=message.chat.id,
@@ -67,6 +78,22 @@ async def start(client, message):
         caption=f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.",
         reply_markup=reply_markup
     )
+
+
+# 🔹 Callback untuk "Cari Video Lainnya"
+@app.on_callback_query()
+async def callback_handler(client, callback_query):
+    if callback_query.data == "next":
+        item = random.choice(data)
+        resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
+        reply_markup = build_keyboard(item)
+
+        await callback_query.message.edit_media(
+            media=InputMediaPhoto(resized_photo, caption=f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka."),
+            reply_markup=reply_markup
+        )
+
+        await callback_query.answer()
 
 
 # 🔹 Event saat ada member baru masuk grup

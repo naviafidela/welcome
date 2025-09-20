@@ -2,6 +2,8 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import asyncio
 import random
+from message_api import data
+
 import aiohttp
 from io import BytesIO
 from PIL import Image
@@ -12,12 +14,6 @@ api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'  # API Hash
 bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'  # Bot Token
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
-
-# Data dari message-api.py (contoh hardcode di sini)
-data = [
-    {"title": "Bokep Indo Mahawiswi", "photo": "https://placehold.co/1280x720", "url": "https://bokepsenja.com"},
-    {"title": "Bokep Indo Janda", "photo": "https://placehold.co/1280x720", "url": "https://bokepsenja.com"}
-]
 
 # === Fungsi resize foto agar 16:9 fullscreen ===
 async def fetch_and_resize(url, width=1280, height=720):

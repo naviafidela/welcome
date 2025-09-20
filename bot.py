@@ -2,20 +2,33 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import asyncio
 import random
-from message_api import data
-
 import aiohttp
 from io import BytesIO
 from PIL import Image
 
-# Ganti dengan token bot Telegram Anda
-api_id = '20786693'   # API ID
-api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'  # API Hash
-bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'  # Bot Token
+# === CONFIG ===
+API_URL = "https://bokepsenja.com/api/"  # ganti dengan URL index.php kamu
+api_id = '20786693'
+api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'
+bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-# === Fungsi resize foto agar 16:9 fullscreen ===
+# === Fetch data dari API ===
+async def get_data():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(API_URL) as resp:
+            if resp.status != 200:
+                return []
+            return await resp.json()
+
+async def get_random_item():
+    data = await get_data()
+    if not data:
+        return None
+    return random.choice(data)
+
+# === Resize foto agar 16:9 fullscreen ===
 async def fetch_and_resize(url, width=1280, height=720):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
@@ -41,13 +54,13 @@ async def fetch_and_resize(url, width=1280, height=720):
     output.seek(0)
     return output
 
-# === Fungsi buat tombol ===
+# === Keyboard ===
 def build_keyboard(item):
     keyboard = [
         [InlineKeyboardButton("🔥 BUKA LINK VIDEO 🔥", url=item["url"])],
         [
-            InlineKeyboardButton(" 👥GRUP 1 👥", url="https://t.me/joinchat/j4cRH_jg7VJhN2I1"),
-            InlineKeyboardButton(" 👥GRUP 2 👥", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
+            InlineKeyboardButton("👥 GRUP 1", url="https://t.me/joinchat/j4cRH_jg7VJhN2I1"),
+            InlineKeyboardButton("👥 GRUP 2", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
         ],
         [InlineKeyboardButton("⭐ Join Channel ⭐", url="https://t.me/BokepSenjaBot")],
         [InlineKeyboardButton("🔄 Cari Video Lainnya 🔄", callback_data="next")]
@@ -57,7 +70,11 @@ def build_keyboard(item):
 # === Command /start ===
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
-    item = random.choice(data)
+    item = await get_random_item()
+    if not item:
+        await message.reply("⚠️ Data tidak ditemukan dari API.")
+        return
+
     resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
     reply_markup = build_keyboard(item)
 
@@ -69,11 +86,15 @@ async def start_command(client, message):
         reply_markup=reply_markup
     )
 
-# === Callback Handler (tombol "Cari Video Lainnya") ===
+# === Callback Handler ===
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
     if callback_query.data == "next":
-        item = random.choice(data)
+        item = await get_random_item()
+        if not item:
+            await callback_query.answer("⚠️ Tidak ada data dari API.", show_alert=True)
+            return
+
         resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
         reply_markup = build_keyboard(item)
 
@@ -83,7 +104,6 @@ async def callback_handler(client, callback_query):
             media=InputMediaPhoto(resized_photo, caption=caption),
             reply_markup=reply_markup
         )
-
         await callback_query.answer()
 
 # === Event: User Baru Masuk Grup ===
@@ -132,5 +152,5 @@ async def add_group(client, message):
 
 # === Run bot ===
 if __name__ == "__main__":
-    print("Berhasil: Bot telah berhasil diinstal dan siap dijalankan.")
+    print("✅ Bot sudah jalan dan terkoneksi ke API PHP")
     app.run()

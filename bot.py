@@ -4,6 +4,10 @@ import asyncio
 import random
 from message_api import data   # 🔹 import data dari file message-api.py
 
+import aiohttp
+from io import BytesIO
+from PIL import Image
+
 # Ganti dengan token bot Telegram Anda
 api_id = '20786693'
 api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'
@@ -11,10 +15,46 @@ bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-# 🔹 Command /start (kirim random 1 item)
+
+# 🔹 Fungsi fetch & resize ke 16:9
+async def fetch_and_resize(url, width=1280, height=720):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            img_bytes = await resp.read()
+
+    img = Image.open(BytesIO(img_bytes))
+    img = img.convert("RGB")
+
+    # Resize dengan crop tengah biar tidak gepeng
+    img_ratio = img.width / img.height
+    target_ratio = width / height
+
+    if img_ratio > target_ratio:
+        # crop kiri-kanan
+        new_width = int(img.height * target_ratio)
+        offset = (img.width - new_width) // 2
+        img = img.crop((offset, 0, offset + new_width, img.height))
+    else:
+        # crop atas-bawah
+        new_height = int(img.width / target_ratio)
+        offset = (img.height - new_height) // 2
+        img = img.crop((0, offset, img.width, offset + new_height))
+
+    img = img.resize((width, height), Image.LANCZOS)
+
+    output = BytesIO()
+    output.name = "image.jpg"
+    img.save(output, format="JPEG", quality=90)
+    output.seek(0)
+    return output
+
+
+# 🔹 Command /start (kirim random 1 item dengan foto 16:9)
 @app.on_message(filters.command("start"))
 async def start(client, message):
-    item = random.choice(data)  # pilih random 1 data
+    item = random.choice(data)
+
+    resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
 
     keyboard = [
         [InlineKeyboardButton("🔗 Buka Link", url=item["url"])]
@@ -23,12 +63,13 @@ async def start(client, message):
 
     await client.send_photo(
         chat_id=message.chat.id,
-        photo=item["photo"],
+        photo=resized_photo,
         caption=f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.",
         reply_markup=reply_markup
     )
 
 
+# 🔹 Event saat ada member baru masuk grup
 @app.on_message(filters.new_chat_members)
 async def add_group(client, message):
     for member in message.new_chat_members:
@@ -73,6 +114,7 @@ async def add_group(client, message):
         await sent_message.delete()
 
 
+# 🔹 Run bot
 if __name__ == "__main__":
     print("Berhasil: Bot telah berhasil diinstal dan siap dijalankan.")
     app.run()

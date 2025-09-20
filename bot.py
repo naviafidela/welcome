@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
+import random
 from message_api import data   # 🔹 import data dari file message-api.py
 
 # Ganti dengan token bot Telegram Anda
@@ -10,21 +11,22 @@ bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
-# 🔹 Command /start
+# 🔹 Command /start (kirim random 1 item)
 @app.on_message(filters.command("start"))
 async def start(client, message):
-    for item in data:
-        keyboard = [
-            [InlineKeyboardButton("🔗 Buka Link", url=item["url"])]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
+    item = random.choice(data)  # pilih random 1 data
 
-        await client.send_photo(
-            chat_id=message.chat.id,
-            photo=item["photo"],
-            caption=f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.",
-            reply_markup=reply_markup
-        )
+    keyboard = [
+        [InlineKeyboardButton("🔗 Buka Link", url=item["url"])]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await client.send_photo(
+        chat_id=message.chat.id,
+        photo=item["photo"],
+        caption=f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.",
+        reply_markup=reply_markup
+    )
 
 
 @app.on_message(filters.new_chat_members)

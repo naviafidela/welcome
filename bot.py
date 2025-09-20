@@ -119,7 +119,7 @@ async def add_group(client, message):
 
         sent_message = await client.send_photo(
             chat_id=message.chat.id,
-            photo="https://placehold.co/1280x720",
+            photo="https://i.ibb.co/L8YvcTB/6276011250815189839-120.jpg",
             caption=f"👋 Hai {name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"

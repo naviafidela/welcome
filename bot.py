@@ -44,13 +44,13 @@ async def fetch_and_resize(url, width=1280, height=720):
 # === Fungsi buat tombol ===
 def build_keyboard(item):
     keyboard = [
-        [InlineKeyboardButton("🔥BUKA LINK VIDEO🔥", url=item["url"])],
+        [InlineKeyboardButton("🔥 BUKA LINK VIDEO 🔥", url=item["url"])],
         [
-            InlineKeyboardButton("👥GRUP 1👥", url="https://t.me/joinchat/j4cRH_jg7VJhN2I1"),
-            InlineKeyboardButton("👥GRUP 2👥", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
+            InlineKeyboardButton(" 👥GRUP 1 👥", url="https://t.me/joinchat/j4cRH_jg7VJhN2I1"),
+            InlineKeyboardButton(" 👥GRUP 2 👥", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
         ],
-        [InlineKeyboardButton("⭐Join Channel⭐", url="https://t.me/BokepSenjaBot")],
-        [InlineKeyboardButton("🔄Cari Video Lainnya🔄", callback_data="next")]
+        [InlineKeyboardButton("⭐ Join Channel ⭐", url="https://t.me/BokepSenjaBot")],
+        [InlineKeyboardButton("🔄 Cari Video Lainnya 🔄", callback_data="next")]
     ]
     return InlineKeyboardMarkup(keyboard)
 

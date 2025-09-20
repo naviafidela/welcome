@@ -1,10 +1,8 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
 import random
 import aiohttp
-from io import BytesIO
-from PIL import Image
 
 # === CONFIG ===
 API_URL = "https://bokepsenja.com/api/TelegramDataVideoWelcome.php"  # ganti dengan URL index.php kamu
@@ -41,46 +39,53 @@ def build_keyboard(item):
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# === Command /start ===
-@app.on_message(filters.command("start"))
-async def start_command(client, message):
-    # Step 1: kirim pesan loading
-    loading_msg = await message.reply("⏳ Mencari video ...")
-
-    # Step 2: ambil data
-    item = await get_random_item()
-    if not item:
-        await loading_msg.edit("⚠️ Data tidak ditemukan dari API.")
-        return
-
+# === Kirim hanya video dengan caption ===
+async def send_video_with_caption(chat_id, item, client):
     reply_markup = build_keyboard(item)
     caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
 
-    # Step 3: hapus pesan loading, lalu kirim video
-    await loading_msg.delete()
-    await message.reply_video(
-        video=item["videos"],
-        caption=caption,
-        reply_markup=reply_markup
-    )
+    if item.get("videos"):
+        await client.send_video(
+            chat_id=chat_id,
+            video=item["videos"],
+            caption=caption,
+            reply_markup=reply_markup
+        )
+    else:
+        await client.send_message(
+            chat_id=chat_id,
+            text=f"⚠️ Video tidak tersedia untuk **{item['title']}**"
+        )
+
+# === Command /start ===
+@app.on_message(filters.command("start"))
+async def start_command(client, message):
+    await message.reply("⏳ Mencari video ...")
+
+    item = await get_random_item()
+    if not item:
+        await message.reply("⚠️ Data tidak ditemukan dari API.")
+        return
+
+    await send_video_with_caption(message.chat.id, item, client)
 
 # === Callback Handler ===
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
     if callback_query.data == "next":
-        await callback_query.answer("⏳ Mencari video lain ...")
         item = await get_random_item()
         if not item:
             await callback_query.answer("⚠️ Tidak ada data dari API.", show_alert=True)
             return
 
-        reply_markup = build_keyboard(item)
-        caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
+        # hapus pesan lama biar gak error MESSAGE_NOT_MODIFIED
+        try:
+            await callback_query.message.delete()
+        except:
+            pass
 
-        await callback_query.message.edit_media(
-            media=InputMediaVideo(item["videos"], caption=caption),
-            reply_markup=reply_markup
-        )
+        await send_video_with_caption(callback_query.message.chat.id, item, client)
+        await callback_query.answer()
 
 # === Event: User Baru Masuk Grup ===
 @app.on_message(filters.new_chat_members)
@@ -128,5 +133,5 @@ async def add_group(client, message):
 
 # === Run bot ===
 if __name__ == "__main__":
-    print("✅ Bot sudah jalan dan terkoneksi ke API PHP")
+    print("✅ Bot sudah jalan dan hanya kirim video dengan caption + tombol")
     app.run()

@@ -46,8 +46,7 @@ async def send_photo_and_video(chat_id, item, client):
     reply_markup = build_keyboard(item)
     caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
 
-    # kirim Text
-    await message.reply("⏳ Mencari video ...")
+    
     
     # lanjut kirim video jika ada
     if item.get("videos"):
@@ -61,6 +60,10 @@ async def send_photo_and_video(chat_id, item, client):
 # === Command /start ===
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
+    
+    # kirim Text
+    await message.reply("⏳ Mencari video ...") 
+    
     item = await get_random_item()
     if not item:
         await message.reply("⚠️ Data tidak ditemukan dari API.")

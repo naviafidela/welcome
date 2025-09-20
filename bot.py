@@ -69,11 +69,11 @@ async def start_command(client, message):
         await searching_msg.edit("⚠️ Data tidak ditemukan dari API.")
         return
 
-    # hapus pesan "Mencari video ..."
-    await searching_msg.delete()
-
     # kirim video
     await send_photo_and_video(message.chat.id, item, client)
+
+    # hapus pesan "Mencari video ..."
+    await searching_msg.delete()
 
 # === Callback Handler ===
 @app.on_callback_query()

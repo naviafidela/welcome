@@ -44,7 +44,7 @@ def build_keyboard(item):
 # === Kirim foto + video ===
 async def send_photo_and_video(chat_id, item, client):
     reply_markup = build_keyboard(item)
-    caption = f"**🎬{item['title']}**\n\n©️__Bokepsenja.com__\n\u200b"
+    caption = f"**📺 {item['title']}**\n\n©️__Bokepsenja.com__\n\u200b"
 
     
     

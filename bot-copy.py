@@ -1,75 +1,112 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import asyncio
 import random
-from message_api import data   # 🔹 import data dari file message-api.py
-
 import aiohttp
 from io import BytesIO
 from PIL import Image
 
-# Ganti dengan token bot Telegram Anda
+# === CONFIG ===
+API_URL = "https://bokepsenja.com/api/TelegramDataVideoWelcome.php"  # ganti dengan URL index.php kamu
 api_id = '20786693'
 api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'
 bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'
 
 app = Client("welcome_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
+# === Fetch data dari API ===
+async def get_data():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(API_URL) as resp:
+            if resp.status != 200:
+                return []
+            return await resp.json()
 
-# 🔹 Fungsi fetch & resize ke 16:9
+async def get_random_item():
+    data = await get_data()
+    if not data:
+        return None
+    return random.choice(data)
+
+# === Resize foto agar 16:9 fullscreen ===
 async def fetch_and_resize(url, width=1280, height=720):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             img_bytes = await resp.read()
 
-    img = Image.open(BytesIO(img_bytes))
-    img = img.convert("RGB")
-
-    # Resize dengan crop tengah biar tidak gepeng
+    img = Image.open(BytesIO(img_bytes)).convert("RGB")
     img_ratio = img.width / img.height
     target_ratio = width / height
 
     if img_ratio > target_ratio:
-        # crop kiri-kanan
-        new_width = int(img.height * target_ratio)
+        new_width = int(target_ratio * img.height)
         offset = (img.width - new_width) // 2
         img = img.crop((offset, 0, offset + new_width, img.height))
     else:
-        # crop atas-bawah
         new_height = int(img.width / target_ratio)
         offset = (img.height - new_height) // 2
         img = img.crop((0, offset, img.width, offset + new_height))
 
     img = img.resize((width, height), Image.LANCZOS)
-
     output = BytesIO()
-    output.name = "image.jpg"
+    output.name = "resized.jpg"
     img.save(output, format="JPEG", quality=90)
     output.seek(0)
     return output
 
+# === Keyboard ===
+def build_keyboard(item):
+    keyboard = [
+        [InlineKeyboardButton("🔥 BUKA LINK VIDEO 🔥", url=item["url"])],
+        [
+            InlineKeyboardButton("👥 GRUP 1", url="https://t.me/joinchat/j4cRH_jg7VJhN2I1"),
+            InlineKeyboardButton("👥 GRUP 2", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
+        ],
+        [InlineKeyboardButton("⭐ Join Channel ⭐", url="https://t.me/BokepSenjaBot")],
+        [InlineKeyboardButton("🔄 Cari Video Lainnya 🔄", callback_data="next")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
-# 🔹 Command /start (kirim random 1 item dengan foto 16:9)
+# === Command /start ===
 @app.on_message(filters.command("start"))
-async def start(client, message):
-    item = random.choice(data)
+async def start_command(client, message):
+    item = await get_random_item()
+    if not item:
+        await message.reply("⚠️ Data tidak ditemukan dari API.")
+        return
 
     resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
+    reply_markup = build_keyboard(item)
 
-    keyboard = [
-        [InlineKeyboardButton("🔗 Buka Link", url=item["url"])]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
 
-    await client.send_photo(
-        chat_id=message.chat.id,
+    await message.reply_photo(
         photo=resized_photo,
-        caption=f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.",
+        caption=caption,
         reply_markup=reply_markup
     )
 
+# === Callback Handler ===
+@app.on_callback_query()
+async def callback_handler(client, callback_query):
+    if callback_query.data == "next":
+        item = await get_random_item()
+        if not item:
+            await callback_query.answer("⚠️ Tidak ada data dari API.", show_alert=True)
+            return
 
-# 🔹 Event saat ada member baru masuk grup
+        resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
+        reply_markup = build_keyboard(item)
+
+        caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
+
+        await callback_query.message.edit_media(
+            media=InputMediaPhoto(resized_photo, caption=caption),
+            reply_markup=reply_markup
+        )
+        await callback_query.answer()
+
+# === Event: User Baru Masuk Grup ===
 @app.on_message(filters.new_chat_members)
 async def add_group(client, message):
     for member in message.new_chat_members:
@@ -95,7 +132,7 @@ async def add_group(client, message):
 
         sent_message = await client.send_photo(
             chat_id=message.chat.id,
-            photo="https://i.ibb.co/L8YvcTB/6276011250815189839-120.jpg",
+            photo="https://placehold.co/1280x720",
             caption=f"👋 Hai {name}\n\n"
                     "Semua Chat Disembunyikan Untuk Anggota Baru\n"
                     "Anda Harus Membuka Kunci Dengan Cara Bagikan Ke 3 - 5 Grup.\n\n"
@@ -113,8 +150,7 @@ async def add_group(client, message):
         await asyncio.sleep(30)
         await sent_message.delete()
 
-
-# 🔹 Run bot
+# === Run bot ===
 if __name__ == "__main__":
-    print("Berhasil: Bot telah berhasil diinstal dan siap dijalankan.")
+    print("✅ Bot sudah jalan dan terkoneksi ke API PHP")
     app.run()

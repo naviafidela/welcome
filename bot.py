@@ -28,32 +28,6 @@ async def get_random_item():
         return None
     return random.choice(data)
 
-# === Resize foto agar 16:9 fullscreen ===
-async def fetch_and_resize(url, width=1280, height=720):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            img_bytes = await resp.read()
-
-    img = Image.open(BytesIO(img_bytes)).convert("RGB")
-    img_ratio = img.width / img.height
-    target_ratio = width / height
-
-    if img_ratio > target_ratio:
-        new_width = int(target_ratio * img.height)
-        offset = (img.width - new_width) // 2
-        img = img.crop((offset, 0, offset + new_width, img.height))
-    else:
-        new_height = int(img.width / target_ratio)
-        offset = (img.height - new_height) // 2
-        img = img.crop((0, offset, img.width, offset + new_height))
-
-    img = img.resize((width, height), Image.LANCZOS)
-    output = BytesIO()
-    output.name = "resized.jpg"
-    img.save(output, format="JPEG", quality=90)
-    output.seek(0)
-    return output
-
 # === Keyboard ===
 def build_keyboard(item):
     keyboard = [
@@ -67,55 +41,46 @@ def build_keyboard(item):
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# === Kirim foto + video ===
-async def send_photo_and_video(chat_id, item, client):
-    resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
-    reply_markup = build_keyboard(item)
-    caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
-
-    # kirim foto dulu
-    await client.send_photo(
-        chat_id=chat_id,
-        photo=resized_photo,
-        caption=caption,
-        reply_markup=reply_markup
-    )
-
-    # lanjut kirim video jika ada
-    if item.get("videos"):
-        await client.send_video(
-            chat_id=chat_id,
-            video=item["videos"],
-            caption=f"▶️ {item['title']}"
-        )
-
 # === Command /start ===
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
+    # Step 1: kirim pesan loading
+    loading_msg = await message.reply("⏳ Mencari video ...")
+
+    # Step 2: ambil data
     item = await get_random_item()
     if not item:
-        await message.reply("⚠️ Data tidak ditemukan dari API.")
+        await loading_msg.edit("⚠️ Data tidak ditemukan dari API.")
         return
 
-    await send_photo_and_video(message.chat.id, item, client)
+    reply_markup = build_keyboard(item)
+    caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
+
+    # Step 3: hapus pesan loading, lalu kirim video
+    await loading_msg.delete()
+    await message.reply_video(
+        video=item["videos"],
+        caption=caption,
+        reply_markup=reply_markup
+    )
 
 # === Callback Handler ===
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
     if callback_query.data == "next":
+        await callback_query.answer("⏳ Mencari video lain ...")
         item = await get_random_item()
         if not item:
             await callback_query.answer("⚠️ Tidak ada data dari API.", show_alert=True)
             return
 
-        # hapus pesan lama biar gak error MESSAGE_NOT_MODIFIED
-        try:
-            await callback_query.message.delete()
-        except:
-            pass
+        reply_markup = build_keyboard(item)
+        caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
 
-        await send_photo_and_video(callback_query.message.chat.id, item, client)
-        await callback_query.answer()
+        await callback_query.message.edit_media(
+            media=InputMediaVideo(item["videos"], caption=caption),
+            reply_markup=reply_markup
+        )
 
 # === Event: User Baru Masuk Grup ===
 @app.on_message(filters.new_chat_members)

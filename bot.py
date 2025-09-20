@@ -37,7 +37,7 @@ def build_keyboard(item):
             InlineKeyboardButton("👥 GRUP 2", url="https://t.me/joinchat/JdpYxovFx3IyMjg1")
         ],
         [InlineKeyboardButton("⭐ Join Channel ⭐", url="https://t.me/BokepSenjaBot")],
-        [InlineKeyboardButton("🔄 Cari Video Lainnya 🔄", switch_inline_query_current_chat="/next")]
+        [InlineKeyboardButton("🔄 Cari Video Lainnya 🔄", url="https://t.me/Bokep2025Bot?start=next")]
     ]
     return InlineKeyboardMarkup(keyboard)
 

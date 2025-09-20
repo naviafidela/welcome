@@ -7,7 +7,7 @@ from io import BytesIO
 from PIL import Image
 
 # === CONFIG ===
-API_URL = "https://bokepsenja.com/api/"  # ganti dengan URL index.php kamu
+API_URL = "https://bokepsenja.com/api/TelegramDataVideoWelcome.php"  # ganti dengan URL index.php kamu
 api_id = '20786693'
 api_hash = '6eebbb7d9f9825a2d200c034bfbb7102'
 bot_token = '7508753099:AAHLs4Xcn7e9N2tXQu9EjGWnAn4efFAMmAs'

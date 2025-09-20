@@ -67,6 +67,28 @@ def build_keyboard(item):
     ]
     return InlineKeyboardMarkup(keyboard)
 
+# === Kirim foto + video ===
+async def send_photo_and_video(chat_id, item, client):
+    resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
+    reply_markup = build_keyboard(item)
+    caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
+
+    # kirim foto dulu
+    await client.send_photo(
+        chat_id=chat_id,
+        photo=resized_photo,
+        caption=caption,
+        reply_markup=reply_markup
+    )
+
+    # lanjut kirim video jika ada
+    if item.get("videos"):
+        await client.send_video(
+            chat_id=chat_id,
+            video=item["videos"],
+            caption=f"▶️ {item['title']}"
+        )
+
 # === Command /start ===
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
@@ -75,16 +97,7 @@ async def start_command(client, message):
         await message.reply("⚠️ Data tidak ditemukan dari API.")
         return
 
-    resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
-    reply_markup = build_keyboard(item)
-
-    caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
-
-    await message.reply_photo(
-        photo=resized_photo,
-        caption=caption,
-        reply_markup=reply_markup
-    )
+    await send_photo_and_video(message.chat.id, item, client)
 
 # === Callback Handler ===
 @app.on_callback_query()
@@ -95,15 +108,13 @@ async def callback_handler(client, callback_query):
             await callback_query.answer("⚠️ Tidak ada data dari API.", show_alert=True)
             return
 
-        resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
-        reply_markup = build_keyboard(item)
+        # hapus pesan lama biar gak error MESSAGE_NOT_MODIFIED
+        try:
+            await callback_query.message.delete()
+        except:
+            pass
 
-        caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
-
-        await callback_query.message.edit_media(
-            media=InputMediaPhoto(resized_photo, caption=caption),
-            reply_markup=reply_markup
-        )
+        await send_photo_and_video(callback_query.message.chat.id, item, client)
         await callback_query.answer()
 
 # === Event: User Baru Masuk Grup ===

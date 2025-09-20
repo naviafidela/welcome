@@ -1,8 +1,10 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import asyncio
 import random
 import aiohttp
+from io import BytesIO
+from PIL import Image
 
 # === CONFIG ===
 API_URL = "https://bokepsenja.com/api/TelegramDataVideoWelcome.php"  # ganti dengan URL index.php kamu
@@ -26,6 +28,32 @@ async def get_random_item():
         return None
     return random.choice(data)
 
+# === Resize foto agar 16:9 fullscreen ===
+async def fetch_and_resize(url, width=1280, height=720):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            img_bytes = await resp.read()
+
+    img = Image.open(BytesIO(img_bytes)).convert("RGB")
+    img_ratio = img.width / img.height
+    target_ratio = width / height
+
+    if img_ratio > target_ratio:
+        new_width = int(target_ratio * img.height)
+        offset = (img.width - new_width) // 2
+        img = img.crop((offset, 0, offset + new_width, img.height))
+    else:
+        new_height = int(img.width / target_ratio)
+        offset = (img.height - new_height) // 2
+        img = img.crop((0, offset, img.width, offset + new_height))
+
+    img = img.resize((width, height), Image.LANCZOS)
+    output = BytesIO()
+    output.name = "resized.jpg"
+    img.save(output, format="JPEG", quality=90)
+    output.seek(0)
+    return output
+
 # === Keyboard ===
 def build_keyboard(item):
     keyboard = [
@@ -39,35 +67,37 @@ def build_keyboard(item):
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# === Kirim hanya video dengan caption ===
-async def send_video_with_caption(chat_id, item, client):
+# === Kirim foto + video ===
+async def send_photo_and_video(chat_id, item, client):
+    resized_photo = await fetch_and_resize(item["photo"], 1280, 720)
     reply_markup = build_keyboard(item)
     caption = f"**{item['title']}**\n\nKlik tombol di bawah untuk membuka.\n\u200b"
 
+    # kirim foto dulu
+    await client.send_photo(
+        chat_id=chat_id,
+        photo=resized_photo,
+        caption=caption,
+        reply_markup=reply_markup
+    )
+
+    # lanjut kirim video jika ada
     if item.get("videos"):
         await client.send_video(
             chat_id=chat_id,
             video=item["videos"],
-            caption=caption,
-            reply_markup=reply_markup
-        )
-    else:
-        await client.send_message(
-            chat_id=chat_id,
-            text=f"⚠️ Video tidak tersedia untuk **{item['title']}**"
+            caption=f"▶️ {item['title']}"
         )
 
 # === Command /start ===
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
-    await message.reply("⏳ Mencari video ...")
-
     item = await get_random_item()
     if not item:
         await message.reply("⚠️ Data tidak ditemukan dari API.")
         return
 
-    await send_video_with_caption(message.chat.id, item, client)
+    await send_photo_and_video(message.chat.id, item, client)
 
 # === Callback Handler ===
 @app.on_callback_query()
@@ -84,7 +114,7 @@ async def callback_handler(client, callback_query):
         except:
             pass
 
-        await send_video_with_caption(callback_query.message.chat.id, item, client)
+        await send_photo_and_video(callback_query.message.chat.id, item, client)
         await callback_query.answer()
 
 # === Event: User Baru Masuk Grup ===
@@ -133,5 +163,5 @@ async def add_group(client, message):
 
 # === Run bot ===
 if __name__ == "__main__":
-    print("✅ Bot sudah jalan dan hanya kirim video dengan caption + tombol")
+    print("✅ Bot sudah jalan dan terkoneksi ke API PHP")
     app.run()

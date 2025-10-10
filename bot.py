@@ -5,6 +5,19 @@ import random
 import aiohttp
 from io import BytesIO
 from PIL import Image
+import ntplib, time, os
+
+try:
+    client = ntplib.NTPClient()
+    response = client.request('time.google.com', version=3)
+    offset = response.tx_time - time.time()
+    if abs(offset) > 1:
+        print(f"⚠️ Waktu sistem meleset {offset:.2f} detik, menyesuaikan...")
+        time.sleep(offset)
+    print("🕒 Waktu sinkron dengan NTP")
+except Exception as e:
+    print(f"❌ Gagal sinkronisasi waktu otomatis: {e}")
+
 
 # === CONFIG ===
 API_URL = "https://streamdex.net/provide/telegram/data-videos/index.php"  # ganti dengan URL index.php kamu
